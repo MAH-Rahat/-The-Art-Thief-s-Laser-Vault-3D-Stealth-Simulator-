@@ -198,3 +198,77 @@ def draw_massive_tree(x, y):
     gluSphere(gluNewQuadric(), 350, 15, 15)
     glPopMatrix()
 
+def draw_cctv_pillar(x, y, phase_offset):
+    col = NIGHT_PILLAR if is_night else DAY_PILLAR
+    glPushMatrix()
+    glTranslatef(x, y, 0)
+    
+    glColor3f(*col)
+    gluCylinder(gluNewQuadric(), 20, 20, 1000, 10, 10) 
+    
+    glTranslatef(0, 0, 1010)
+    
+    local_angle = math.sin(cctv_time + phase_offset) * 60.0
+    glRotatef(local_angle, 0, 0, 1) 
+    
+    glColor3f(0.5, 0.5, 0.5)
+    glutSolidCube(40) 
+    
+    glColor3f(0.2, 0.2, 0.2)
+    glPushMatrix()
+    glTranslatef(0, 20, 0)
+    glRotatef(-90, 1, 0, 0) 
+    gluCylinder(gluNewQuadric(), 10, 15, 30, 10, 10)
+    glPopMatrix()
+
+    if is_night:
+        glPushMatrix()
+        glTranslatef(0, 0, -970) 
+        glColor3f(0.8, 0.8, 0.2) 
+        
+        glBegin(GL_QUADS)
+        glVertex3f(0, 0, 0)         
+        glVertex3f(-600, 1200, 0)  
+        glVertex3f(600, 1200, 0)
+        glVertex3f(600, 1200, 0) 
+        glEnd()
+        glPopMatrix()
+
+    glPopMatrix()
+
+def draw_wall_cctv(x, y, z, phase_offset):
+    glPushMatrix()
+    glTranslatef(x, y, z)
+    
+    glColor3f(0.3, 0.3, 0.3)
+    glutSolidCube(30)
+    
+    glTranslatef(0, -20, 0) 
+    
+    local_angle = math.sin(cctv_time + phase_offset) * 60.0
+    glRotatef(local_angle, 0, 0, 1) 
+    
+    glColor3f(0.5, 0.5, 0.5)
+    glutSolidCube(40) 
+    
+    glColor3f(0.2, 0.2, 0.2)
+    glPushMatrix()
+    glTranslatef(0, -20, 0)
+    glRotatef(90, 1, 0, 0) 
+    gluCylinder(gluNewQuadric(), 10, 15, 30, 10, 10)
+    glPopMatrix()
+    
+    if is_night:
+        glPushMatrix()
+        glTranslatef(0, 0, -z + 60) 
+        glColor3f(0.8, 0.8, 0.2) 
+        
+        glBegin(GL_QUADS)
+        glVertex3f(0, 0, 0)
+        glVertex3f(-500, -1000, 0) 
+        glVertex3f(500, -1000, 0)
+        glVertex3f(500, -1000, 0) 
+        glEnd()
+        glPopMatrix()
+
+    glPopMatrix()
