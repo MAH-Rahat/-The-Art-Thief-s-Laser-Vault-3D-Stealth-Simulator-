@@ -51,17 +51,3 @@ thief_angle = 90.0
 is_crouching = False 
 is_torch_on = False 
 dash_timer = 0
-
-# --- FEATURE 3: DECOY KINEMATICS PHYSICS STATE ---
-# State: 0 = Ready, 1 = Thrown (In Air), 2 = Landed (Drones Chasing)
-decoy_state = 0 
-decoy_x = 0.0
-decoy_y = 0.0
-decoy_z = 0.0
-decoy_vx = 0.0
-decoy_vy = 0.0
-decoy_vz = 0.0
-decoy_timer = 0
-
-bush_positions = [(random.uniform(-8000, 8000), random.uniform(-8500, -100)) for _ in range(150)]
-
