@@ -124,3 +124,77 @@ def draw_text(x, y, text, font=GLUT_BITMAP_HELVETICA_12): #type: ignore
     glPopMatrix()
     glMatrixMode(GL_MODELVIEW)
 
+def draw_light_pool(radius, r, g, b, z_height):
+    glColor3f(r, g, b)
+    glPushMatrix()
+    glTranslatef(0, 0, z_height)
+    glScalef(1.0, 1.0, 0.01) 
+    gluSphere(gluNewQuadric(), radius, 20, 20)
+    glPopMatrix()
+
+# --- UPDATED: DRAW DYNAMIC FLYING DECOY ---
+def draw_decoy():
+    if decoy_state > 0:
+        # Draw the physical stone/cube
+        glPushMatrix()
+        glTranslatef(decoy_x, decoy_y, decoy_z) 
+        
+        # If it's flying in the air, make it tumble and spin!
+        if decoy_state == 1:
+            glRotatef(artifact_spin * 5.0, 1, 1, 0)
+            
+        glColor3f(0.4, 0.8, 1.0) 
+        glutSolidCube(40)
+        glPopMatrix()
+        
+        # Draw the tracking light/shadow explicitly clamped to the floor!
+        if is_night:
+            glPushMatrix()
+            glTranslatef(decoy_x, decoy_y, 0)
+            draw_light_pool(80, 0.4, 0.8, 1.0, 5) # Z=5 so it sits on the road/grass perfectly
+            glPopMatrix()
+
+# --- ENVIRONMENT FUNCTIONS ---
+def draw_super_massive_floor_and_road():
+    glBegin(GL_QUADS)
+    for i in range(-GRID_LENGTH, GRID_LENGTH, 400): 
+        for j in range(-GRID_LENGTH, GRID_LENGTH, 400):
+            if j < 0:
+                col_a = NIGHT_GRASS_A if is_night else DAY_GRASS_A
+                col_b = NIGHT_GRASS_B if is_night else DAY_GRASS_B
+            else:
+                col_a = NIGHT_FLOOR_A if is_night else DAY_FLOOR_A
+                col_b = NIGHT_FLOOR_B if is_night else DAY_FLOOR_B
+            
+            if ((i // 400) + (j // 400)) % 2 == 0:
+                glColor3f(*col_a)
+            else:
+                glColor3f(*col_b)
+                
+            glVertex3f(i, j, 0)
+            glVertex3f(i + 400, j, 0)
+            glVertex3f(i + 400, j + 400, 0)
+            glVertex3f(i, j + 400, 0)
+
+    road_col = NIGHT_ROAD if is_night else DAY_ROAD
+    glColor3f(*road_col)
+    glVertex3f(-300, -GRID_LENGTH, 5) 
+    glVertex3f(300, -GRID_LENGTH, 5)
+    glVertex3f(300, 0, 5)
+    glVertex3f(-300, 0, 5)
+    glEnd()
+
+def draw_massive_tree(x, y):
+    trunk_col = NIGHT_TRUNK if is_night else DAY_TRUNK
+    leaves_col = NIGHT_LEAVES if is_night else DAY_LEAVES
+    
+    glPushMatrix()
+    glTranslatef(x, y, 0)
+    glColor3f(*trunk_col)
+    gluCylinder(gluNewQuadric(), 80, 50, 600, 10, 10)
+    
+    glTranslatef(0, 0, 600)
+    glColor3f(*leaves_col)
+    gluSphere(gluNewQuadric(), 350, 15, 15)
+    glPopMatrix()
+
