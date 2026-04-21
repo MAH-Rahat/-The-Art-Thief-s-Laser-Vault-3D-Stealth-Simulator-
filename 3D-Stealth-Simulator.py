@@ -51,3 +51,4 @@ thief_angle = 90.0
 is_crouching = False 
 is_torch_on = False 
 dash_timer = 0
+
