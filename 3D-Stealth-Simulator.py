@@ -198,3 +198,711 @@ def draw_massive_tree(x, y):
     gluSphere(gluNewQuadric(), 350, 15, 15)
     glPopMatrix()
 
+def draw_cctv_pillar(x, y, phase_offset):
+    col = NIGHT_PILLAR if is_night else DAY_PILLAR
+    glPushMatrix()
+    glTranslatef(x, y, 0)
+    
+    glColor3f(*col)
+    gluCylinder(gluNewQuadric(), 20, 20, 1000, 10, 10) 
+    
+    glTranslatef(0, 0, 1010)
+    
+    local_angle = math.sin(cctv_time + phase_offset) * 60.0
+    glRotatef(local_angle, 0, 0, 1) 
+    
+    glColor3f(0.5, 0.5, 0.5)
+    glutSolidCube(40) 
+    
+    glColor3f(0.2, 0.2, 0.2)
+    glPushMatrix()
+    glTranslatef(0, 20, 0)
+    glRotatef(-90, 1, 0, 0) 
+    gluCylinder(gluNewQuadric(), 10, 15, 30, 10, 10)
+    glPopMatrix()
+
+    if is_night:
+        glPushMatrix()
+        glTranslatef(0, 0, -970) 
+        glColor3f(0.8, 0.8, 0.2) 
+        
+        glBegin(GL_QUADS)
+        glVertex3f(0, 0, 0)         
+        glVertex3f(-600, 1200, 0)  
+        glVertex3f(600, 1200, 0)
+        glVertex3f(600, 1200, 0) 
+        glEnd()
+        glPopMatrix()
+
+    glPopMatrix()
+
+def draw_wall_cctv(x, y, z, phase_offset):
+    glPushMatrix()
+    glTranslatef(x, y, z)
+    
+    glColor3f(0.3, 0.3, 0.3)
+    glutSolidCube(30)
+    
+    glTranslatef(0, -20, 0) 
+    
+    local_angle = math.sin(cctv_time + phase_offset) * 60.0
+    glRotatef(local_angle, 0, 0, 1) 
+    
+    glColor3f(0.5, 0.5, 0.5)
+    glutSolidCube(40) 
+    
+    glColor3f(0.2, 0.2, 0.2)
+    glPushMatrix()
+    glTranslatef(0, -20, 0)
+    glRotatef(90, 1, 0, 0) 
+    gluCylinder(gluNewQuadric(), 10, 15, 30, 10, 10)
+    glPopMatrix()
+    
+    if is_night:
+        glPushMatrix()
+        glTranslatef(0, 0, -z + 60) 
+        glColor3f(0.8, 0.8, 0.2) 
+        
+        glBegin(GL_QUADS)
+        glVertex3f(0, 0, 0)
+        glVertex3f(-500, -1000, 0) 
+        glVertex3f(500, -1000, 0)
+        glVertex3f(500, -1000, 0) 
+        glEnd()
+        glPopMatrix()
+
+    glPopMatrix()
+
+def draw_streetlight(x, y):
+    glPushMatrix()
+    glTranslatef(x, y, 0)
+    
+    if is_night:
+        glPushMatrix()
+        direction = 1 if x < 0 else -1
+        glTranslatef(direction * 300, 0, 0) 
+        draw_light_pool(280, 0.9, 0.9, 0.7, 20) 
+        glPopMatrix()
+
+    glColor3f(0.2, 0.2, 0.2)
+    gluCylinder(gluNewQuadric(), 15, 10, 800, 10, 10)
+
+    glTranslatef(0, 0, 800)
+    direction = 90 if x < 0 else -90 
+    glRotatef(direction, 0, 0, 1)
+    glRotatef(90, 0, 1, 0)
+    gluCylinder(gluNewQuadric(), 8, 8, 300, 10, 10) 
+
+    glTranslatef(0, 0, 300)
+    if is_night:
+        glColor3f(1.0, 1.0, 0.8) 
+    else:
+        glColor3f(0.3, 0.3, 0.3) 
+    gluSphere(gluNewQuadric(), 30, 15, 15)
+    glPopMatrix()
+
+def draw_grass_bushes():
+    bush_col = NIGHT_BUSH if is_night else DAY_BUSH
+    glColor3f(*bush_col)
+    for bx, by in bush_positions:
+        if -350 < bx < 350:
+            continue
+        glPushMatrix()
+        glTranslatef(bx, by, 0)
+        glScalef(1.5, 1.5, 0.8) 
+        gluSphere(gluNewQuadric(), 80, 10, 10)
+        glPopMatrix()
+
+def draw_outer_field_objects():
+    draw_grass_bushes()
+
+    tree_coords = [
+        (-4000, -2000), (4000, -2000), (-3000, -6000), (3000, -6000),
+        (-6000, -1000), (6000, -1000), (-2000, -8000), (2000, -8000),
+        (-5000, -4000), (5000, -4000), (-7000, -7000), (7000, -7000)
+    ]
+    for tx, ty in tree_coords:
+        draw_massive_tree(tx, ty)
+        
+    for px, py, phase in cctv_pillars:
+        draw_cctv_pillar(px, py, phase)
+
+    for sy in range(-1000, -9000, -1500):
+        draw_streetlight(-350, sy)
+        draw_streetlight(350, sy)
+
+def draw_museum_architecture():
+    wall_col = NIGHT_WALL if is_night else DAY_WALL
+    glColor3f(*wall_col)
+    
+    glBegin(GL_QUADS)
+    glVertex3f(-GRID_LENGTH, 0, 0); glVertex3f(-6500, 0, 0)
+    glVertex3f(-6500, 0, 1500); glVertex3f(-GRID_LENGTH, 0, 1500)
+    
+    glVertex3f(-6500, 0, 450); glVertex3f(-5750, 0, 450)
+    glVertex3f(-5750, 0, 1500); glVertex3f(-6500, 0, 1500)
+    
+    glVertex3f(-5750, 0, 0); glVertex3f(-500, 0, 0)
+    glVertex3f(-500, 0, 1500); glVertex3f(-5750, 0, 1500)
+    
+    glVertex3f(500, 0, 0); glVertex3f(GRID_LENGTH, 0, 0)
+    glVertex3f(GRID_LENGTH, 0, 1500); glVertex3f(500, 0, 1500)
+
+    glVertex3f(-GRID_LENGTH, 0, 0); glVertex3f(-GRID_LENGTH, GRID_LENGTH, 0)
+    glVertex3f(-GRID_LENGTH, GRID_LENGTH, 1500); glVertex3f(-GRID_LENGTH, 0, 1500)
+    
+    glVertex3f(GRID_LENGTH, 0, 0); glVertex3f(GRID_LENGTH, GRID_LENGTH, 0)
+    glVertex3f(GRID_LENGTH, GRID_LENGTH, 1500); glVertex3f(GRID_LENGTH, 0, 1500)
+    
+    glVertex3f(-GRID_LENGTH, GRID_LENGTH, 0); glVertex3f(GRID_LENGTH, GRID_LENGTH, 0)
+    glVertex3f(GRID_LENGTH, GRID_LENGTH, 1500); glVertex3f(-GRID_LENGTH, GRID_LENGTH, 1500)
+
+    if is_night:
+        glColor3f(NIGHT_WALL[0]*0.8, NIGHT_WALL[1]*0.8, NIGHT_WALL[2]*0.8) 
+    else:
+        glColor3f(DAY_WALL[0]*0.8, DAY_WALL[1]*0.8, DAY_WALL[2]*0.8)
+        
+    glVertex3f(-GRID_LENGTH, 0, 1500)
+    glVertex3f(GRID_LENGTH, 0, 1500)
+    glVertex3f(GRID_LENGTH, GRID_LENGTH, 1500)
+    glVertex3f(-GRID_LENGTH, GRID_LENGTH, 1500)
+    glEnd()
+
+    for wx, wy, wz, phase in cctv_walls:
+        draw_wall_cctv(wx, wy, wz, phase)
+
+    glColor3f(0.3, 0.15, 0.05) 
+    glPushMatrix()
+    glTranslatef(0, 0, 400) 
+    glScalef(10.0, 0.5, 8.0) 
+    glutSolidCube(100)
+    glPopMatrix()
+    
+    if is_lockdown:
+        glColor3f(0.05, 0.05, 0.05) 
+        for bar_x in range(-450, 500, 100):
+            glPushMatrix()
+            glTranslatef(bar_x, 0, lockdown_z) 
+            gluCylinder(gluNewQuadric(), 15, 15, 1500, 10, 10)
+            glPopMatrix()
+
+    glColor3f(*wall_col)
+    glPushMatrix()
+    glTranslatef(-4650, 6000, 750)
+    glScalef(87.0, 1.0, 15.0) 
+    glutSolidCube(100)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(4650, 6000, 750)
+    glScalef(87.0, 1.0, 15.0) 
+    glutSolidCube(100)
+    glPopMatrix()
+
+    glColor3f(*COLOR_LASER)
+    for lx in range(-250, 300, 100): 
+        glPushMatrix()
+        glTranslatef(lx, 6000, 0) 
+        gluCylinder(gluNewQuadric(), 15, 15, 1500, 10, 10)
+        glPopMatrix()
+
+def draw_interior_artifacts():
+    box_data = [
+        (-2000, 2000, 0), (2000, 2000, 1), (-4000, 4000, 2), 
+        (4000, 4000, 3), (-1500, 5000, 4), (1500, 5000, 5)
+    ]
+    for bx, by, kind in box_data:
+        glPushMatrix()
+        glTranslatef(bx, by, 0)
+        
+        glColor3f(0.15, 0.15, 0.15)
+        glPushMatrix()
+        glTranslatef(0, 0, 100)
+        glScalef(2.0, 2.0, 2.0)
+        glutSolidCube(100)
+        glPopMatrix()
+        
+        glPushMatrix()
+        glTranslatef(0, 0, 250)
+        glRotatef(artifact_spin, 0, 0, 1) 
+        glRotatef(artifact_spin * 0.5, 0, 1, 0)
+        
+        if kind == 0:
+            glColor3f(0.8, 0.2, 0.2) 
+            gluSphere(gluNewQuadric(), 40, 15, 15)
+        elif kind == 1:
+            glColor3f(0.2, 0.8, 0.2) 
+            glutSolidCube(60)
+        elif kind == 2:
+            glColor3f(0.2, 0.2, 0.8) 
+            gluCylinder(gluNewQuadric(), 30, 30, 60, 10, 10)
+        elif kind == 3:
+            glColor3f(0.8, 0.8, 0.2) 
+            gluCylinder(gluNewQuadric(), 40, 0, 80, 10, 10)
+        elif kind == 4:
+            glColor3f(0.8, 0.4, 0.8) 
+            gluSphere(gluNewQuadric(), 30, 10, 10)
+            glTranslatef(0, 0, 30)
+            gluSphere(gluNewQuadric(), 15, 10, 10)
+        else:
+            glColor3f(0.4, 0.8, 0.8) 
+            glutSolidCube(40)
+            glTranslatef(0, 0, 30)
+            gluSphere(gluNewQuadric(), 20, 10, 10)
+        glPopMatrix()
+
+        glColor3f(0.3, 0.4, 0.5) 
+        glPushMatrix()
+        glTranslatef(0, 0, 400)
+        glScalef(1.9, 1.9, 0.1)
+        glutSolidCube(100)
+        glPopMatrix()
+
+        for px, py in [(-90, -90), (90, -90), (-90, 90), (90, 90)]:
+            glPushMatrix()
+            glTranslatef(px, py, 250)
+            glScalef(0.1, 0.1, 3.0)
+            glutSolidCube(100)
+            glPopMatrix()
+
+        glPopMatrix()
+
+    glPushMatrix()
+    glTranslatef(0, 7500, 0)
+    
+    glColor3f(0.6, 0.5, 0.1)
+    glPushMatrix()
+    glTranslatef(0, 0, 100)
+    glScalef(2.0, 2.0, 2.0)
+    glutSolidCube(100)
+    glPopMatrix()
+    
+    glColor3f(1.0, 0.8, 0.0) 
+    glPushMatrix()
+    glTranslatef(0, 0, 300)
+    glRotatef(artifact_spin, 0, 0, 1)
+    glRotatef(artifact_spin * 0.5, 0, 1, 0)
+    glScalef(2.0, 2.0, 2.0)
+    gluSphere(gluNewQuadric(), 30, 10, 10)
+    gluCylinder(gluNewQuadric(), 40, 40, 20, 10, 10)
+    glPopMatrix()
+    
+    glColor3f(0.3, 0.4, 0.5) 
+    glPushMatrix()
+    glTranslatef(0, 0, 500) 
+    glScalef(2.1, 2.1, 0.1)
+    glutSolidCube(100)
+    glPopMatrix()
+
+    for px, py in [(-100, -100), (100, -100), (-100, 100), (100, 100)]:
+        glPushMatrix()
+        glTranslatef(px, py, 300)
+        glScalef(0.1, 0.1, 4.0) 
+        glutSolidCube(100)
+        glPopMatrix()
+        
+    glPopMatrix()
+
+def draw_security_drones():
+    for d in drones:
+        glPushMatrix()
+        glTranslatef(d['x'], d['y'], d['z'])
+        
+        glColor3f(0.2, 0.2, 0.2)
+        glPushMatrix()
+        glScalef(2.0, 2.0, 0.5)
+        glutSolidCube(80)
+        glPopMatrix()
+        
+        glColor3f(0.1, 0.1, 0.1)
+        for rx, ry in [(-80, -80), (80, -80), (-80, 80), (80, 80)]:
+            glPushMatrix()
+            glTranslatef(rx, ry, 0)
+            gluCylinder(gluNewQuadric(), 25, 25, 20, 10, 10)
+            glPopMatrix()
+            
+        if is_night:
+            glPushMatrix()
+            glTranslatef(0, 0, -d['z']) 
+            draw_light_pool(400, 0.9, 0.1, 0.1, 100)
+            glPopMatrix()
+            
+        glPopMatrix()
+
+def draw_thief():
+    if is_lockdown and lockdown_z == 0 and -500 < thief_x < 500 and thief_y > -100:
+        return 
+
+    glPushMatrix()
+    glTranslatef(thief_x, thief_y, 0)
+    glRotatef(thief_angle - 90, 0, 0, 1)
+    
+    if is_night and is_torch_on:
+        glPushMatrix()
+        glTranslatef(40, 600, 0) 
+        glScalef(2.0, 3.0, 1.0) 
+        draw_light_pool(200, 0.95, 0.85, 0.65, 80) 
+        glPopMatrix()
+
+    if camera_mode == "first_person":
+        glPopMatrix()
+        return 
+        
+    if dash_timer > 0:
+        glScalef(3.0, 3.0, 3.0) 
+    else:
+        glScalef(3.0, 3.0, 3.0) 
+
+    glColor3f(0.1, 0.1, 0.15) 
+    glPushMatrix()
+    if is_crouching:
+        glTranslatef(0, 15, -10)
+        glRotatef(-45, 1, 0, 0) 
+    
+    glPushMatrix()
+    glTranslatef(-15, 0, 0)
+    gluCylinder(gluNewQuadric(), 10, 8, 70, 10, 10)
+    glPopMatrix()
+    
+    glPushMatrix()
+    glTranslatef(15, 0, 0)
+    gluCylinder(gluNewQuadric(), 10, 8, 70, 10, 10)
+    glPopMatrix()
+    glPopMatrix() 
+
+    glPushMatrix()
+    if is_crouching:
+        glTranslatef(0, 15, -30) 
+        glRotatef(-30, 1, 0, 0)  
+
+    glColor3f(0.15, 0.15, 0.15) 
+    glPushMatrix()
+    glTranslatef(0, 5, 110) 
+    glRotatef(-15, 1, 0, 0) 
+    glScalef(1.1, 0.6, 1.2)
+    glutSolidCube(60)
+    glPopMatrix()
+
+    glPushMatrix()
+    glTranslatef(0, 15, 160) 
+    glColor3f(0.9, 0.7, 0.5) 
+    gluSphere(gluNewQuadric(), 20, 15, 15)
+    glColor3f(0.05, 0.05, 0.05) 
+    glTranslatef(0, 0, 5)
+    gluSphere(gluNewQuadric(), 21, 15, 15)
+    glPopMatrix()
+
+    glColor3f(0.15, 0.15, 0.15)
+    glPushMatrix()
+    glTranslatef(-40, 5, 130)
+    glRotatef(180, 1, 0, 0) 
+    gluCylinder(gluNewQuadric(), 8, 6, 80, 10, 10)
+    glPopMatrix()
+
+    glPushMatrix()
+    glTranslatef(40, 5, 130)
+    glRotatef(180, 1, 0, 0) 
+    gluCylinder(gluNewQuadric(), 8, 6, 80, 10, 10)
+    glPopMatrix()
+
+    glPopMatrix() 
+    glPopMatrix() 
+
+def setupCamera():
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    gluPerspective(cam_fov, 1.25, 0.1, 45000) 
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    
+    if camera_mode == "global":
+        rad = math.radians(cam_angle)
+        x = math.sin(rad) * cam_dist
+        y = -math.cos(rad) * cam_dist
+        gluLookAt(x, y, cam_height, 0, 2000, 0, 0, 0, 1)
+        
+    elif camera_mode == "first_person":
+        rad = math.radians(thief_angle)
+        
+        eye_x = thief_x 
+        eye_y = thief_y 
+        
+        cam_z = 220 if is_crouching else 480
+        
+        target_x = eye_x + math.cos(rad) * 2000
+        target_y = eye_y + math.sin(rad) * 2000
+        target_z = cam_z - 50 
+        
+        gluLookAt(eye_x, eye_y, cam_z, target_x, target_y, target_z, 0, 0, 1)
+
+def is_valid_move(nx, ny):
+    if nx < -8800 or nx > 8800: return False
+    if ny < -8800 or ny > 8800: return False
+
+    if -150 < ny < 150:
+        if -6400 < nx < -5850:
+            if not is_crouching:
+                return False
+        else:
+            return False
+
+    if 5850 < ny < 6150:
+        return False 
+
+    return True
+
+def keyboardListener(key, x, y):
+    global is_night, camera_mode, is_crouching, is_torch_on, thief_x, thief_y, thief_angle, cam_fov
+    global dash_timer, decoy_state, decoy_x, decoy_y, decoy_z, decoy_vx, decoy_vy, decoy_vz, decoy_timer
+    
+    try:
+        char = key.decode('utf-8').lower()
+    except:
+        char = ''
+
+    if char == 'r':
+        reset_game()
+        glutPostRedisplay()
+        return
+
+    if is_lockdown: return
+
+    if char == 't':
+        is_night = not is_night
+    elif char == 'v':
+        if camera_mode == "global":
+            camera_mode = "first_person"
+        else:
+            camera_mode = "global"
+    elif char == 'c':
+        is_crouching = not is_crouching
+    elif char == 'f':
+        is_torch_on = not is_torch_on
+        
+    elif char == 'e':
+        if dash_timer <= 0 and not is_crouching:
+            dash_timer = 25 
+            
+    # --- UPDATED: TRIGGER THROW PHYSICS ---
+    elif char == 'q':
+        if decoy_state == 0:
+            decoy_state = 1 # State 1: In the air!
+            # Spawns exactly at the thief's hand height
+            decoy_x = thief_x + math.cos(math.radians(thief_angle)) * 50
+            decoy_y = thief_y + math.sin(math.radians(thief_angle)) * 50
+            decoy_z = 150.0 
+            
+            # Give it strong forward speed + upward thrust to create a beautiful arc!
+            throw_speed = 150.0
+            decoy_vx = math.cos(math.radians(thief_angle)) * throw_speed
+            decoy_vy = math.sin(math.radians(thief_angle)) * throw_speed
+            decoy_vz = 45.0 
+        
+    elif char == 'z':
+        cam_fov -= 2.0
+        if cam_fov < 10.0: cam_fov = 10.0 
+    elif char == 'x':
+        cam_fov += 2.0
+        if cam_fov > 150.0: cam_fov = 150.0 
+
+    elif char == 'w':
+        next_x = thief_x + math.cos(math.radians(thief_angle)) * 30
+        next_y = thief_y + math.sin(math.radians(thief_angle)) * 30
+        if is_valid_move(next_x, next_y):
+            thief_x, thief_y = next_x, next_y
+    elif char == 's':
+        next_x = thief_x - math.cos(math.radians(thief_angle)) * 30
+        next_y = thief_y - math.sin(math.radians(thief_angle)) * 30
+        if is_valid_move(next_x, next_y):
+            thief_x, thief_y = next_x, next_y
+    elif char == 'a':
+        thief_angle += 5
+    elif char == 'd':
+        thief_angle -= 5
+    
+    glutPostRedisplay()
+
+def specialKeyListener(key, x, y):
+    global cam_angle, cam_height, cam_dist
+    if key == GLUT_KEY_LEFT:
+        cam_angle -= 3
+    elif key == GLUT_KEY_RIGHT:
+        cam_angle += 3
+    elif key == GLUT_KEY_UP:
+        cam_height += 300 
+    elif key == GLUT_KEY_DOWN:
+        cam_height -= 300
+    glutPostRedisplay()
+
+def idle():
+    global artifact_spin, drones, cctv_time, is_lockdown, lockdown_z
+    global dash_timer, thief_x, thief_y
+    global decoy_state, decoy_x, decoy_y, decoy_z, decoy_vx, decoy_vy, decoy_vz, decoy_timer
+    
+    artifact_spin += 1.5
+    if artifact_spin > 360:
+        artifact_spin -= 360
+        
+    cctv_time += 0.02
+
+    if not is_lockdown:
+        if dash_timer > 0:
+            dash_timer -= 1
+            next_x = thief_x + math.cos(math.radians(thief_angle)) * 60
+            next_y = thief_y + math.sin(math.radians(thief_angle)) * 60
+            if is_valid_move(next_x, next_y):
+                thief_x, thief_y = next_x, next_y
+                
+        # --- NEW: CALCULATE DECOY THROW PHYSICS ---
+        if decoy_state == 1:
+            # It flies through the air using velocity!
+            decoy_x += decoy_vx
+            decoy_y += decoy_vy
+            decoy_z += decoy_vz
+            decoy_vz -= 3.0 # GRAVITY pulls it down every frame
+            
+            # If it hits the floor...
+            if decoy_z <= 20:
+                decoy_z = 20
+                decoy_state = 2 # State 2: Landed!
+                decoy_timer = 250 # Start the timer for the drones to investigate
+                
+        elif decoy_state == 2:
+            decoy_timer -= 1
+            if decoy_timer <= 0:
+                decoy_state = 0 # Disappears
+
+        for d in drones:
+            # --- NEW: DRONES HEAR THE IMPACT AND CHASE THE STONE ---
+            if decoy_state == 2:
+                dx = decoy_x - d['x']
+                dy = decoy_y - d['y']
+                dist = math.hypot(dx, dy)
+                if dist > d['speed']:
+                    d['x'] += (dx / dist) * d['speed']
+                    d['y'] += (dy / dist) * d['speed']
+            else:
+                # Normal Patrol
+                if d['state'] == 0: 
+                    d['x'] += d['speed']
+                    if d['x'] >= d['max_x']: d['state'] = 1
+                elif d['state'] == 1: 
+                    d['y'] += d['speed']
+                    if d['y'] >= d['max_y']: d['state'] = 2
+                elif d['state'] == 2: 
+                    d['x'] -= d['speed']
+                    if d['x'] <= d['min_x']: d['state'] = 3
+                elif d['state'] == 3: 
+                    d['y'] -= d['speed']
+                    if d['y'] <= d['min_y']: d['state'] = 0
+
+    if not is_lockdown:
+        for d in drones:
+            dist = math.hypot(thief_x - d['x'], thief_y - d['y'])
+            if dist < 400: 
+                is_lockdown = True
+                        
+        if 5900 < thief_y < 6100:
+            if not is_crouching:
+                for lx in range(-250, 300, 100):
+                    if abs(thief_x - lx) < 80:
+                        is_lockdown = True
+
+        for px, py, phase in cctv_pillars:
+            dx = thief_x - px
+            dy = thief_y - py
+            if math.hypot(dx, dy) < 1200:
+                facing_angle = 90.0 + math.sin(cctv_time + phase) * 60.0
+                thief_angle_to_cctv = math.degrees(math.atan2(dy, dx))
+                diff = (thief_angle_to_cctv - facing_angle) % 360
+                if diff > 180: diff -= 360
+                if abs(diff) < 30: 
+                    is_lockdown = True
+
+        for wx, wy, wz, phase in cctv_walls:
+            dx = thief_x - wx
+            dy = thief_y - wy
+            if math.hypot(dx, dy) < 1000:
+                facing_angle = -90.0 + math.sin(cctv_time + phase) * 60.0
+                thief_angle_to_cctv = math.degrees(math.atan2(dy, dx))
+                diff = (thief_angle_to_cctv - facing_angle) % 360
+                if diff > 180: diff -= 360
+                if abs(diff) < 30:
+                    is_lockdown = True
+
+    if is_lockdown and lockdown_z > 0:
+        lockdown_z -= 60.0
+        if lockdown_z < 0: lockdown_z = 0
+                
+    glutPostRedisplay()
+
+def showScreen():
+    if is_lockdown:
+        siren_blink = math.sin(cctv_time * 15.0)
+        if siren_blink > 0:
+            glClearColor(1.0, 0.0, 0.0, 1.0) 
+        else:
+            glClearColor(0.3, 0.0, 0.0, 1.0) 
+    else:
+        glClearColor(0, 0, 0, 1) 
+        
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) #type: ignore
+    glLoadIdentity()
+    glViewport(0, 0, 1000, 800)
+
+    setupCamera()
+
+    draw_super_massive_floor_and_road()
+    draw_outer_field_objects()
+    draw_museum_architecture()
+    draw_interior_artifacts()
+    
+    draw_decoy() 
+    draw_security_drones() 
+    draw_thief()
+
+    # glDisable(GL_DEPTH_TEST) 
+    
+    # draw_text(10, 780, "A Random Fixed Position Text")
+    # draw_text(10, 760, f"See how the position and variable change?: {rand_var}")
+
+    mode = "LOCKDOWN!" if is_lockdown else ("NIGHT" if is_night else "DAY")
+    posture = "CROUCH" if is_crouching else "STAND"
+    torch = "ON" if is_torch_on else "OFF"
+    dash_text = "DASHING!" if dash_timer > 0 else "READY"
+    
+    # Update HUD based on the new physics states
+    if decoy_state == 1: decoy_text = "FLYING..."
+    elif decoy_state == 2: decoy_text = f"ACTIVE ({decoy_timer})"
+    else: decoy_text = "READY"
+    
+    draw_text(10, 720, f"THE ART THIEF'S LASER VAULT | MODE: {mode} | CAM: {camera_mode.upper()}")
+    draw_text(10, 700, f"POSTURE: {posture} ('C') | TORCH: {torch} ('F') | DASH: {dash_text} | DECOY: {decoy_text}")
+    draw_text(10, 680, "CONTROLS -> W/A/S/D: Sneak | E: DASH | Q: DECOY | Z/X: ZOOM | R: RESTART | ARROWS: Global Cam")
+
+    if is_lockdown:
+        draw_text(380, 400, "GAME OVER - PRESS 'R' TO RESTART", font=GLUT_BITMAP_TIMES_ROMAN_24) #type: ignore
+        
+    glEnable(GL_DEPTH_TEST) 
+
+    glutSwapBuffers()
+
+def main():
+    glutInit()
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH) #type: ignore
+    glutInitWindowSize(1000, 800)
+    glutInitWindowPosition(0, 0)
+    glutCreateWindow(b" The Art Thief's Laser Vault (3D Stealth Simulator)")
+    
+    glEnable(GL_DEPTH_TEST)
+    
+    glutDisplayFunc(showScreen)
+    glutKeyboardFunc(keyboardListener)
+    glutSpecialFunc(specialKeyListener)
+    glutMouseFunc(None) 
+    glutIdleFunc(idle)
+    
+    glutMainLoop()
+
+if __name__ == "__main__":
+    main()
