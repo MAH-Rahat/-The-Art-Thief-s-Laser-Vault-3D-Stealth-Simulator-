@@ -15,6 +15,7 @@ Built entirely from scratch, this engine relies exclusively on fundamental 3D tr
 <img width="867" height="580" alt="image" src="https://github.com/user-attachments/assets/f309c087-c95a-4ffb-8574-c36a7ae60e14" />
 <img width="1491" height="951" alt="image" src="https://github.com/user-attachments/assets/30c87818-0521-401e-9bfc-6dc8e3b68d72" />
 <img width="1493" height="1027" alt="image" src="https://github.com/user-attachments/assets/3d573b8d-8e2e-450c-9af9-1790ad36ca99" />
+<img width="1500" height="1045" alt="image" src="https://github.com/user-attachments/assets/7f5b8f29-39a6-4120-9b58-c5c7fe30cbfa" />
 <img width="1486" height="981" alt="image" src="https://github.com/user-attachments/assets/24340ad9-c1cb-4209-a58d-3fc7949f41c0" />
 <img width="1474" height="1011" alt="image" src="https://github.com/user-attachments/assets/cd57f8da-5fec-4d86-b5be-61a01c8e296f" />
 
